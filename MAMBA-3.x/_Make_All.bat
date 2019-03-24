@@ -1,5 +1,5 @@
 @echo off
-title Compiling IRISMAN
+title Compiling MAMBA/PRX Loader
 taskkill /IM cmd.exe /T /FI "WINDOWTITLE eq Administrator:*">NUL
 cls
 
