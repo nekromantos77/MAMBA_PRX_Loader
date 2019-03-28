@@ -1,7 +1,7 @@
 /*
 	==============================================================
 
-	Unofficial MAMBA/PRX Autoloader v4.84.1 (c) 2016 Ps3ita Team, 2017-2019 aldostools
+	Unofficial MAMBA/PRX Autoloader v4.84.2 (c) 2016 Ps3ita Team, 2017-2019 aldostools
 
 	Original Author (c) 2015 NzV
 

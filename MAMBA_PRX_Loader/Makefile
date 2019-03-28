@@ -22,7 +22,7 @@ DATA		:=	data
 INCLUDES	:=	include
 PKGFILES	:=	$(CURDIR)/pkgfiles
 
-TITLE		:=	Unofficial MAMBA/PRX Loader (+Autoloader) v4.84.1
+TITLE		:=	Unofficial MAMBA/PRX Loader (+Autoloader) v4.84.2
 APPID		:=	MAMBAPRXL
 CONTENTID	:=	EP0001-$(APPID)_00-0000000000000000
 

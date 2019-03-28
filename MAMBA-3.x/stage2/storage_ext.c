@@ -2568,12 +2568,12 @@ static void init_mount_hdd0(void)
 
 LV2_HOOKED_FUNCTION_PRECALL_SUCCESS_8(int, post_cellFsUtilMount, (const char *block_dev, const char *filesystem, const char *mount_point, int unk, int read_only, int unk2, char *argv[], int argc))
 {
-	init_mount_hdd0();
 	#ifdef DEBUG
 		DPRINTF("cellFsUtilMount: %s\n", mount_point);
 	#endif
 	if (!hdd0_mounted && strcmp(mount_point, "/dev_hdd0") == 0 && strcmp(filesystem, "CELL_FS_UFS") == 0)
 	{
+		init_mount_hdd0();
 		#ifndef DEBUG
 			unhook_function_on_precall_success(cellFsUtilMount_symbol, post_cellFsUtilMount, 8);
 		#endif

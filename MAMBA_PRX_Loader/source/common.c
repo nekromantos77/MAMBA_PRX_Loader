@@ -9,7 +9,7 @@
 
 #define FS_S_IFMT 0170000
 
-#define VERSION_NAME "MAMBA/PRX Autoloader Unofficial v4.84.1 (forked from NzV)\n"
+#define VERSION_NAME "MAMBA/PRX Autoloader Unofficial v4.84.2 (forked from NzV)\n"
 
 //----------------------------------------
 //LOG

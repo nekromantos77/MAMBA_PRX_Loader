@@ -200,19 +200,19 @@
 #define vmode_patch_offset			0x0
 #define aio_copy_root_offset		0xD658
 
-#elif defined(FIRMWARE_4_82)
+#elif defined(FIRMWARE_4_82) || defined(FIRMWARE_4_83) || defined(FIRMWARE_4_84)
 
 #define LIBFS_EXTERNAL_HASH			0x5bc7bce800006477
 #define vmode_patch_offset			0x0
 #define aio_copy_root_offset		0xD658
 
-#elif defined(FIRMWARE_4_82DEX)
+#elif defined(FIRMWARE_4_82DEX) || defined(FIRMWARE_4_83DEX) || defined(FIRMWARE_4_84DEX)
 
 #define LIBFS_EXTERNAL_HASH			0x5bc7bce800006477
 #define vmode_patch_offset			0x0
 #define aio_copy_root_offset		0xD658
 
-#elif defined(FIRMWARE_4_82DEH)
+#elif defined(FIRMWARE_4_82DEH) || defined(FIRMWARE_4_83DEH) || defined(FIRMWARE_4_84DEH)
 
 #define LIBFS_EXTERNAL_HASH			0x5bc7bce800006477
 #define vmode_patch_offset			0x0

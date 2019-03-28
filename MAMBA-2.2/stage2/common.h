@@ -91,6 +91,18 @@
 #define FIRMWARE_VERSION					0x0482
 #elif defined(FIRMWARE_4_82DEH)
 #define FIRMWARE_VERSION					0x0482
+#elif defined(FIRMWARE_4_83)
+#define FIRMWARE_VERSION					0x0483
+#elif defined(FIRMWARE_4_83DEX)
+#define FIRMWARE_VERSION					0x0483
+#elif defined(FIRMWARE_4_83DEH)
+#define FIRMWARE_VERSION					0x0483
+#elif defined(FIRMWARE_4_84)
+#define FIRMWARE_VERSION					0x0484
+#elif defined(FIRMWARE_4_84DEX)
+#define FIRMWARE_VERSION					0x0484
+#elif defined(FIRMWARE_4_84DEH)
+#define FIRMWARE_VERSION					0x0484
 #endif
 
 

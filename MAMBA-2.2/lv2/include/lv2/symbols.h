@@ -2839,7 +2839,7 @@
 #define user_thread_prio_patch2                     0x21EB4 // bytes matched: 0x28  419D02587B8007A03FE080012FA0000363FF0009419EFF64FB4100B87D3042A6
 #define shutdown_copy_params_call                   0xAB4C
 #define shutdown_patch_offset                       0xAB38
-#elif defined(FIRMWARE_4_75) || defined(FIRMWARE_4_76) || defined(FIRMWARE_4_78) || defined(FIRMWARE_4_81) || defined(FIRMWARE_4_82)
+#elif defined(FIRMWARE_4_75) || defined(FIRMWARE_4_76) || defined(FIRMWARE_4_78) || defined(FIRMWARE_4_81) || defined(FIRMWARE_4_82) || defined(FIRMWARE_4_83) || defined(FIRMWARE_4_84)
 #define TOC                                         0x34FBB0 //done
 #define open_shared_kernel_object_symbol            0x12410 // bytes matched: 0x80  F821FF317C0802A6FB8100B0FBC100C0FBE100C8F80100E0789C84027CE03B78
 #define close_kernel_object_handle_symbol           0x11A30 // bytes matched: 0x44  F821FF517C0802A6FBA10098FBE100A8FB410080FB610088FB810090FBC100A0
@@ -3384,7 +3384,7 @@
 #define user_thread_prio_patch2                     0x21EB4 // bytes matched: 0x24  419D02587B8007A03FE080012FA0000363FF0009419EFF64FB4100B87D3042A6
 #define shutdown_patch_offset                       0xAB38 // bytes matched: 0x14  600000044182FEFC7F83E3787F64DB787FC5F378
 #define shutdown_copy_params_call                   0xAB4C // bytes matched: 0x18*  2F830000409E005C7FC6F3787FA3EB78388000017F65DB78
-#elif defined(FIRMWARE_4_80DEH) || defined(FIRMWARE_4_81DEH) || defined(FIRMWARE_4_82DEH)
+#elif defined(FIRMWARE_4_75DEH) || defined(FIRMWARE_4_76DEH) || defined(FIRMWARE_4_78DEH) || defined(FIRMWARE_4_80DEH) || defined(FIRMWARE_4_81DEH) || defined(FIRMWARE_4_82DEH) || defined(FIRMWARE_4_83DEH) || defined(FIRMWARE_4_84DEH)
 #define TOC                                         0x39D440 //done
 #define open_shared_kernel_object_symbol            0x12A54 // bytes matched: 0x80  F821FF317C0802A6FB8100B0FBC100C0FBE100C8F80100E0789C84027CE03B78
 #define close_kernel_object_handle_symbol           0x12074 // bytes matched: 0x3C  F821FF517C0802A6FBA10098FBE100A8FB410080FB610088FB810090FBC100A0
@@ -3493,7 +3493,7 @@
 #define user_thread_prio_patch2                     0x221F4 // bytes matched: 0x28  419D02587B8007A03FE080012FA0000363FF0009419EFF64FB4100B87D3042A6
 #define shutdown_patch_offset                       0xAB38 // bytes matched: 0x30  600000044182FEFC7F83E3787F64DB787FC5F378480055812F830000409E005C
 #define shutdown_copy_params_call                   0xAB4C // bytes matched: 0x1C  480055812F830000409E005C7FC6F3787FA3EB78388000017F65DB78
-#elif defined(FIRMWARE_4_81DEX) || defined(FIRMWARE_4_82DEX) // Ported by Joonie, special thanks to @aldostools for his awesome Getsymbol tool!!!!
+#elif defined(FIRMWARE_4_81DEX) || defined(FIRMWARE_4_82DEX) || defined(FIRMWARE_4_83DEX) || defined(FIRMWARE_4_84DEX) // Ported by Joonie, special thanks to @aldostools for his awesome Getsymbol tool!!!!
 #define TOC                                         0x3759C0 //done
 #define open_shared_kernel_object_symbol            0x12A58 // bytes matched: 0x80  F821FF317C0802A6FB8100B0FBC100C0FBE100C8F80100E0789C84027CE03B78
 #define close_kernel_object_handle_symbol           0x12078 // bytes matched: 0x80  F821FF517C0802A6FBA10098FBE100A8FB410080FB610088FB810090FBC100A0

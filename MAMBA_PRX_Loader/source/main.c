@@ -31,7 +31,7 @@
 #include "mamba_prx_loader.h"
 #include "lv2_utils.h"
 
-#define VERSION_NAME 	"Unofficial MAMBA/PRX Loader v4.84.1 (forked from NzV)\r\n"
+#define VERSION_NAME 	"Unofficial MAMBA/PRX Loader v4.84.2 (forked from NzV)\r\n"
 
 #define SC_SYS_POWER 		(379)
 #define SYS_REBOOT			0x8201
@@ -214,12 +214,12 @@ int get_firmware()
 			return 0x460D;
 		break;
 		case 0x800000000034F960ULL:
-			if(lv2peek(0x80000000002FC938ULL)==0x323031342F31312FULL) {ps2emu_folder = 0x466; return 0x466C;}
-			else {ps2emu_folder = 0x465; return 0x465C;}
+			if(lv2peek(0x80000000002FC938ULL)==0x323031342F31312FULL) {ps2emu_folder = 0x466; return 0x466C;} else
+																	  {ps2emu_folder = 0x465; return 0x465C;}
 		break;
 		case 0x8000000000375510ULL:
-			if(lv2peek(0x800000000031EBA8ULL)==0x323031342F31312FULL) {ps2emu_folder = 0x466; return 0x466D;}
-			else {ps2emu_folder = 0x465; return 0x465D;}
+			if(lv2peek(0x800000000031EBA8ULL)==0x323031342F31312FULL) {ps2emu_folder = 0x466; return 0x466D;} else 
+																	  {ps2emu_folder = 0x465; return 0x465D;}
 		break;
 		case 0x800000000034FB10ULL:
 			ps2emu_folder = 0x470;
@@ -234,6 +234,8 @@ int get_firmware()
 			if(lv2peek(0x80000000002FCB68ULL)==0x323031352F31322FULL) {ps2emu_folder = 0x478; return 0x478C;} else
 			if(lv2peek(0x80000000002FCB68ULL)==0x323031362F31302FULL) {ps2emu_folder = 0x481; return 0x481C;} else
 			if(lv2peek(0x80000000002FCB68ULL)==0x323031372F30382FULL) {ps2emu_folder = 0x482; return 0x482C;} else
+			if(lv2peek(0x80000000002FCB68ULL)==0x323031382F30392FULL) {ps2emu_folder = 0x483; return 0x483C;} else
+			if(lv2peek(0x80000000002FCB68ULL)==0x323031392F30312FULL) {ps2emu_folder = 0x484; return 0x484C;} else
 																	  {ps2emu_folder = 0x475; return 0x475C;}
 		break;
 		case 0x80000000003758E0ULL:
@@ -251,11 +253,18 @@ int get_firmware()
 		break;
 		case 0x800000000039D440ULL:
 		//	ps2emu_folder = 0x480;
-			return 0x480E;
+			if(lv2peek(0x8000000000344B70ULL)==0x323031352F30382FULL) {return 0x476E;} else
+			if(lv2peek(0x8000000000344B70ULL)==0x323031352F31322FULL) {return 0x478E;} else
+			if(lv2peek(0x8000000000344B70ULL)==0x323031362F30342FULL) {return 0x480E;} else
+			if(lv2peek(0x8000000000344B70ULL)==0x323031362F31302FULL) {return 0x481E;} else
+			if(lv2peek(0x8000000000344B70ULL)==0x323031372F30392FULL) {return 0x482E;} else
+			if(lv2peek(0x8000000000344B70ULL)==0x323031392F30312FULL) {return 0x484E;} else
+																	  {return 0x475E;}
 		break;
 		case 0x80000000003759C0ULL:
-			ps2emu_folder = 0x481;
-			return 0x481D;
+			if(lv2peek(0x800000000031F028ULL)==0x323031372F30382FULL) {ps2emu_folder = 0x482; return 0x482D;} else
+			if(lv2peek(0x800000000031F028ULL)==0x323031392F30312FULL) {ps2emu_folder = 0x484; return 0x484D;} else
+																	  {ps2emu_folder = 0x481; return 0x481D;}
 		break;
 	}
 	return 0;
@@ -264,8 +273,9 @@ int get_firmware()
 int run_uninstall_autoloader()
 {
 	char filename[128];
-	int fw_list[39] = { 0x355C,0x421C,0x430C,0x431C,0x440C,0x441C,0x446C,0x450C,0x453C,0x455C,0x460C,0x465C,0x466C,0x470C,0x475C,0x476C,0x478C,0x480C,
-						0x355D,0x421D,0x430D,              0x441D,0x446D,0x450D,0x453D,0x455D,0x460D,0x465D,0x466D,0x470D,0x475D,0x476D,0x478D,0x480D,0x480E,0x481C,0x481D,0x482C};
+	int fw_list[48] = { 0x355C,0x421C,0x430C,0x431C,0x440C,0x441C,0x446C,0x450C,0x453C,0x455C,0x460C,0x465C,0x466C,0x470C,0x475C,0x476C,0x478C,0x480C,0x481C,0x482D,0x483C,0x484C,
+						0x355D,0x421D,0x430D,              0x441D,0x446D,0x450D,0x453D,0x455D,0x460D,0x465D,0x466D,0x470D,0x475D,0x476D,0x478D,0x480D,0x481D,0x482D,       0x484D,
+																														  0x475E,0x476E,0x478E,0x480E,0x481E,0x482E,       0x484E };
 	int i;
 
 	#ifdef ENABLE_LOG
@@ -381,7 +391,7 @@ int run_uninstall_autoloader()
 
 	//Remove payload and residual ps2emu
 residual:
-	for (i = 0; i < 39; i++)
+	for (i = 0; i < 48; i++)
 	{
 		if (fw_list[i] == 0) break;
 		sprintf (filename, "/dev_blind/sys/internal/mpl_payload_%X.bin", fw_list[i]);

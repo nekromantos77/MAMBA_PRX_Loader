@@ -89,4 +89,17 @@ all:
 	make -f Makefile_4.82D --no-print-directory
 	make -f Makefile_4.82E clean --no-print-directory
 	make -f Makefile_4.82E --no-print-directory
+	make -f Makefile_4.83 clean --no-print-directory
+	make -f Makefile_4.83 --no-print-directory
+	make -f Makefile_4.83D clean --no-print-directory
+	make -f Makefile_4.83D --no-print-directory
+	make -f Makefile_4.83E clean --no-print-directory
+	make -f Makefile_4.83E --no-print-directory
+	make -f Makefile_4.84 clean --no-print-directory
+	make -f Makefile_4.84 --no-print-directory
+	make -f Makefile_4.84D clean --no-print-directory
+	make -f Makefile_4.84D --no-print-directory
+	make -f Makefile_4.84E clean --no-print-directory
+	make -f Makefile_4.84E --no-print-directory
+
 	rm -f *.o *.elf stage2/*.map stage2/*.o lv2/src/*.o lv1/src/*.o debug/src/*.o

@@ -42,7 +42,7 @@
 #define IS_CFW			1
 
 #define MAMBA_VERSION		0x0F
-#define MAMBA_VERSION_BCD	0x0720
+#define MAMBA_VERSION_BCD	0x0801
 
 // Format of version:
 // byte 0, 7 MS bits -> reserved
