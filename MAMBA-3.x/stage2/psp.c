@@ -18,8 +18,8 @@
 uint32_t psp_tag;
 uint8_t psp_keys[16];
 uint8_t psp_code;
-char pspemu_path[36];
-char psptrans_path[37];
+//char pspemu_path[36];
+//char psptrans_path[37];
 
 #define SPRX_NUM		90
 #define NUM_SCE_PSP_MODULES	5

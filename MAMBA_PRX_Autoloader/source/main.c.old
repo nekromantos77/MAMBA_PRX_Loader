@@ -84,15 +84,7 @@ int launchself(const char*file)
 		return _sys_process_atexitspawn(0, file, 0, 0, 0x3d9, 0x20);
 	}
 	return FAILED;
-}
 
-int launchselfback(const char*file)
-{
-	if(file_exists(file)==SUCCESS)
-	{
-		return _sys_process_atexitspawn(0, file, 0, 0, 0x7d0, 0x20);
-	}
-	return FAILED;
 }
 
 int sys_get_system_parameter(u64 *unk, u64 *unk2, u64 *unk3, u64 *bootparam)
@@ -125,76 +117,6 @@ int try_mount_usb0()
 	return ret;
 }
 
-void launch_sm_self()
-{
-	if(file_exists("/dev_hdd0/tmp/core_flags/ignoresm")==SUCCESS)
-	{
-		#ifdef ENABLE_LOG
-		if(verbose) WriteToLog("Using 'ignoresm' flag from /dev_hdd0/tmp/core_flags\n");
-		#endif
-		return;
-	}
-	else
-	if(file_exists("/dev_usb000/core_flags/ignoresm")==SUCCESS)
-	{
-		#ifdef ENABLE_LOG
-		if(verbose) WriteToLog("Using 'ignoresm' flag from /dev_usb000\n");
-		#endif
-		return;
-	}
-	else
-	if(file_exists("/dev_usb001/core_flags/ignoresm")==SUCCESS)
-	{
-		#ifdef ENABLE_LOG
-		if(verbose) WriteToLog("Using 'ignoresm' flag from /dev_usb001\n");
-		#endif
-		return;
-	}
-	else
-	{
-		if(launchselfback("/dev_usb000/sm.self")==SUCCESS)
-		{
-			#ifdef ENABLE_LOG
-			if(verbose) WriteToLog("'sm.self' working from /dev_usb000\n");
-			#endif
-			return;
-		}
-
-		if(launchselfback("/dev_usb001/sm.self")==SUCCESS)
-		{
-			#ifdef ENABLE_LOG
-			if(verbose) WriteToLog("'sm.self' working from /dev_usb001\n");
-			#endif
-			return;
-		}
-
-		if(launchselfback("/dev_flash/vsh/module/sm.self")==SUCCESS)
-		{
-			#ifdef ENABLE_LOG
-			if(verbose) WriteToLog("'sm.self' working from /dev_flash/vsh/module\n");
-			#endif
-			return;
-		}
-
-		// Backward compatibility with Estwald's new_core
-		if(launchselfback("/dev_usb000/sm_external.self")==SUCCESS)
-		{
-			#ifdef ENABLE_LOG
-			if(verbose) WriteToLog("'sm_external.self' working from /dev_usb000\n");
-			#endif
-			return;
-		}
-
-		if(launchselfback("/dev_flash/sm.self")==SUCCESS)
-		{
-			#ifdef ENABLE_LOG
-			if(verbose) WriteToLog("'sm.self' working from /dev_flash\n");
-			#endif
-			return;
-		}
-	}
-}
-
 //----------------------------------------
 //INIT FLAG
 //----------------------------------------
@@ -208,17 +130,17 @@ void InitFlag()
 	failsafe = verbose = 0;
 	#ifdef ENABLE_LOG
 	//Flag Verbose
-	if(file_exists("/dev_hdd0/tmp/core_flags/verbose")==SUCCESS)
+	if(file_exists("/dev_hdd0/tmp/core_flags/verbose")==0)
 	{
 		verbose = 1;
 		Open_Log("/dev_hdd0/tmp/new_core.log");
 	}
-	else if(file_exists("/dev_usb000/core_flags/verbose")==SUCCESS)
+	else if(file_exists("/dev_usb000/core_flags/verbose")==0)
 	{
 		verbose = 1;
 		Open_Log("/dev_usb000/new_core.log");
 	}
-	else if(file_exists("/dev_usb001/core_flags/verbose")==SUCCESS)
+	else if(file_exists("/dev_usb001/core_flags/verbose")==0)
 	{
 		verbose = 1;
 		Open_Log("/dev_usb001/new_core.log");
@@ -226,9 +148,9 @@ void InitFlag()
 
 	#endif
 	//Flag Failsafe
-	if(file_exists("/dev_hdd0/tmp/core_flags/failsafe")==SUCCESS) failsafe = 1; else
-	if(file_exists("/dev_usb000/core_flags/failsafe")  ==SUCCESS) failsafe = 1; else
-	if(file_exists("/dev_usb001/core_flags/failsafe")  ==SUCCESS) failsafe = 1;
+	if(file_exists("/dev_hdd0/tmp/core_flags/failsafe")==0) failsafe = 1;
+    else if(file_exists("/dev_usb000/core_flags/failsafe")==0) failsafe = 1;
+	else if(file_exists("/dev_usb001/core_flags/failsafe")==0) failsafe = 1;
 	//Log
 	#ifdef ENABLE_LOG
 	if(verbose) WriteToLog(s);
@@ -242,52 +164,52 @@ void InitFlag()
 
 s32 main(s32 argc, const char* argv[])
 {
-	if(launchself("/dev_flash/sys/internal/sys_init_osd_orig.self")!=SUCCESS) // launch VSH at first to avoid problems with the PAD
+	//This can sometimes cause problem with pad synchronizing but avoid the problem with vsh CEX and Kernel DEX
+	if(launchself("/dev_flash/vsh/module/vsh.self")!=SUCCESS)
 	{
-		if(launchself("/dev_flash/vsh/module/vsh.self")!=SUCCESS)     //This can sometimes cause problem with pad synchronizing but avoid the problem with vsh CEX and Kernel DEX
-		{
-			{ BEEP1 }
+		{ BEEP1 }
 
-			//EMERGENCY MODE
-			//Try to mount /dev_usb000 (wait 15sec)
-			try_mount_usb0();
-			// Try to launch /dev_usb000/emergency.self
-			if(dir_exists("/dev_usb000"))
+		//EMERGENCY MODE
+		//Try to mount /dev_usb000 (wait 15sec)
+		try_mount_usb0();
+		// Try to launch /dev_usb000/emergency.self
+		if (dir_exists("/dev_usb000"))
+		{
+			#ifdef ENABLE_LOG
+			verbose = 1;
+			Open_Log("/dev_usb000/new_core.log");
+			if (verbose) WriteToLog("Error: vsh.self not found or corrupt\n");
+			#endif
+
+			if(sys_fs_mount_ext("CELL_FS_IOS:BUILTIN_FLSH1", "CELL_FS_FAT", "/dev_rewrite", 0, NULL, 0)==SUCCESS)
 			{
 				#ifdef ENABLE_LOG
-				verbose = 1;
-				Open_Log("/dev_usb000/new_core.log");
-				if(verbose) WriteToLog("Error: vsh.self not found or corrupt\n");
-				#endif
-
-				if(sys_fs_mount_ext("CELL_FS_IOS:BUILTIN_FLSH1", "CELL_FS_FAT", "/dev_rewrite", 0, NULL, 0)==SUCCESS)
-				{
-					#ifdef ENABLE_LOG
-					if(verbose) WriteToLog("Success: /dev_rewrite mounted\n");
-					#endif
-				}
-				#ifdef ENABLE_LOG
-				else
-				{
-					if(verbose) WriteToLog("Error: /dev_rewrite not mounted\n");
-				}
-				#endif
-				if(launchself("/dev_usb000/emergency.self")!=SUCCESS)
-				{
-					{ BEEP2 }
-
-					#ifdef ENABLE_LOG
-					if(verbose) WriteToLog("Error: Launch /dev_usb000/emergency.self failed\n");
-					CloseLog();
-					#endif
-					goto exit_new_core;
-				}
-				#ifdef ENABLE_LOG
-				if(verbose) WriteToLog("Error: /dev_usb000/emergency.self launched\n");
+				if (verbose) WriteToLog("Success: /dev_rewrite mounted\n");
 				#endif
 			}
-			goto exit_new_core;
+			#ifdef ENABLE_LOG
+			else
+			{
+				#ifdef ENABLE_LOG
+				if (verbose) WriteToLog("Error: /dev_rewrite not mounted\n");
+				#endif
+			}
+			#endif
+			if(launchself("/dev_usb000/emergency.self")!=SUCCESS)
+			{
+				{ BEEP2 }
+
+				#ifdef ENABLE_LOG
+				if (verbose) WriteToLog("Error: Launch /dev_usb000/emergency.self failed\n");
+				CloseLog();
+				#endif
+				goto exit_new_core;
+			}
+			#ifdef ENABLE_LOG
+			if (verbose) WriteToLog("Error: /dev_usb000/emergency.self launched\n");
+			#endif
 		}
+		goto exit_new_core;
 	}
 
 	//Fix to TMAPI
@@ -344,38 +266,31 @@ s32 main(s32 argc, const char* argv[])
 	InitFlag();
 
 	//FAILSAFE
-	if(failsafe) goto exit_new_core;
+	if (failsafe) goto exit_new_core;
 
 	//COBRA ENABLED ?
-	if(is_cobra() == SUCCESS)
+	if (is_cobra() == SUCCESS)
 	{
 		#ifdef ENABLE_LOG
-		if(verbose) WriteToLog("Running in COBRA mode!\n");
+		if (verbose) WriteToLog("Error: Running in COBRA mode!\n");
 		#endif
-
-		//SM LOADER
-		launch_sm_self();
-
 		goto exit_new_core;
 	}
 
 	//CLEAR STAGE1 IF COBRA CFW
-	if((dir_exists("/dev_flash/rebug/cobra") == SUCCESS) || (dir_exists("/dev_flash/habib/cobra") == SUCCESS) ||
+	if ((dir_exists("/dev_flash/rebug/cobra") == SUCCESS) || (dir_exists("/dev_flash/habib/cobra") == SUCCESS) ||
 		(file_exists("/dev_flash/sys/stage2_disabled.bin") == SUCCESS) || (file_exists("/dev_flash/sys/stage2.bak") == SUCCESS))
 		{
 			int i;
 			for(i=0;i<(512/8);i++)
 					lv2poke(0x80000000007F0000ULL + (i * 8), 0ULL);
 			#ifdef ENABLE_LOG
-			if(verbose) WriteToLog("Success: Cleared COBRA stage1\n");
+			if (verbose) WriteToLog("Success: Cleared COBRA stage1\n");
 			#endif
 		}
 
 	//MAMBA/PRX LOADER
 	mamba_prx_loader(0,0);
-
-	//SM LOADER
-	launch_sm_self();
 
 	//END
 exit_new_core:

@@ -29,10 +29,11 @@ MapEntry map_table[MAX_TABLE_ENTRIES];
 // TODO: map_path and open_path_hook should be mutexed...
 
 int8_t max_table_entries = 0;
+int8_t condition_apphome_index = 0;
 
 int map_path(char *oldpath, char *newpath, uint32_t flags)
 {
-	int8_t i, firstfree = -1;
+	int8_t i, firstfree = -1, is_dev_bdvd = 0;
 
 	if (!oldpath || *oldpath == 0)
 		return -1;
@@ -47,6 +48,7 @@ int map_path(char *oldpath, char *newpath, uint32_t flags)
 	if (strcmp(oldpath, "/dev_bdvd") == 0)
 	{
 		condition_apphome = (newpath != NULL);
+		condition_apphome_index = 0, is_dev_bdvd = 1; //AV 20190405
 	}
 
 	for (i = 0; i < max_table_entries; i++)
@@ -64,6 +66,8 @@ int map_path(char *oldpath, char *newpath, uint32_t flags)
 					map_table[i].newpath[len] = 0;
 					map_table[i].newpath_len = len;
 					map_table[i].flags = (map_table[i].flags&FLAG_COPY) | (flags&(~FLAG_COPY));
+
+					if(is_dev_bdvd) condition_apphome_index = i;
 				}
 				else
 				{
@@ -118,6 +122,8 @@ int map_path(char *oldpath, char *newpath, uint32_t flags)
 		strncpy(map_table[firstfree].newpath, newpath, _MAX_PATH);
 		map_table[firstfree].newpath[_MAX_PATH] = 0;
 		map_table[firstfree].newpath_len = strlen(newpath);
+
+		if(is_dev_bdvd) condition_apphome_index = firstfree;
 
 		max_table_entries++;
 		return 0;
@@ -375,8 +381,8 @@ LV2_HOOKED_FUNCTION_POSTCALL_2(void, open_path_hook, (char *path0, int mode))
 	!strncmp(gameid, "NP", 2) ||
 	!strncmp(gameid, "BL", 2) ||
 	!strncmp(gameid, "BC", 2) ||
-	!strncmp(gameid, "_INST_", 6) ||
-	!strncmp(gameid, "_DEL_", 5) ||
+	!strncmp(gameid, "_INST_", 6) || // 80010006 error fix when trying to install a game update with syscall disabled. # Joonie's, Alexander's, Aldo's
+	!strncmp(gameid, "_DEL_", 5) ||  // Fix data corruption if you uninstall game/game update/homebrew with syscall disabled # Alexander's
 	!strncmp(gameid, "KOEI3", 5) ||
 	!strncmp(gameid, "KTGS3", 5) ||
 	!strncmp(gameid, "MRTC0", 5) ||
@@ -397,9 +403,9 @@ LV2_HOOKED_FUNCTION_POSTCALL_2(void, open_path_hook, (char *path0, int mode))
 
 		// test whitelist.cfg and blacklist.cfg
 		if (listed(0, gameid)) // whitelist.cfg test
-		allow = 1;
+			allow = 1;
 		if (listed(1, gameid)) // blacklist.cfg test
-		allow = 0;
+			allow = 0;
 
 		// let's now block homebrews if the "allow" flag is false
 		if (!allow)
@@ -451,18 +457,34 @@ LV2_HOOKED_FUNCTION_POSTCALL_2(void, open_path_hook, (char *path0, int mode))
 					if(strncmp(path, map_table[i].oldpath, len) == 0)
 					{
 						strcpy(map_table[i].newpath + map_table[i].newpath_len, path + len);
+
+						// -- AV: use partial folder remapping when newpath starts with double '/' like //dev_hdd0/blah...
+						if(map_table[i].newpath[1] == '/')
+						{
+							CellFsStat stat;
+							if (cellFsStat(map_table[i].newpath, &stat) != 0)
+							{
+								#ifdef  DEBUG
+								DPRINTF("open_path %s\n", path0);
+								#endif
+								return; // Do not remap / Use the original file when redirected file does not exist
+							}
+						}
+
 						set_patched_func_param(1, (uint64_t)map_table[i].newpath);
 
 						#ifdef  DEBUG
-						//DPRINTF("=: [%s]\n", map_table[i].newpath);
+						DPRINTF("open_path %s\n", map_table[i].newpath);
 						#endif
-						break;
+						return;
 					}
 				}
 			}
 		}
 
-		//DPRINTF("open_path %s\n", path);
+		#ifdef  DEBUG
+		DPRINTF("open_path %s\n", path0);
+		#endif
 	}
 }
 
@@ -503,7 +525,7 @@ int sys_aio_copy_root(char *src, char *dst)
 	if (condition_apphome && (strcmp(dst, "/dev_bdvd") == 0)) // if dev_bdvd and jb game mounted
 	{
 		// find /dev_bdvd
-		for (int8_t i = 0; i < max_table_entries; i++)
+		for (int8_t i = condition_apphome_index; i < max_table_entries; i++)
 		{
 			if (map_table[i].oldpath && strcmp(map_table[i].oldpath, "/dev_bdvd") == 0)
 			{
